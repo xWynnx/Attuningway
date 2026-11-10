@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,18 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
     private const string CommandName = "/attunement";
+
+    private static readonly HashSet<string> WarningExcludedHousingZoneNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "The Mist",
+        "Mist",
+        "The Goblet",
+        "Goblet",
+        "The Lavender Beds",
+        "Lavender Beds",
+        "Shirogane",
+        "Empyreum",
+    };
 
     public Configuration Configuration { get; init; }
 
@@ -152,7 +165,10 @@ public sealed class Plugin : IDalamudPlugin
 
         if (currentTerritory != previousTerritoryId)
         {
-            var hasUnattunedInPreviousZone = HasUnattunedAetherytes(previousTerritoryId, uiState);
+            var enteredHousingTerritory = IsWarningExcludedHousingTerritory(currentTerritory);
+            var hasUnattunedInPreviousZone = !enteredHousingTerritory &&
+                !IsWarningExcludedHousingTerritory(previousTerritoryId) &&
+                HasUnattunedAetherytes(previousTerritoryId, uiState);
             if (hasUnattunedInPreviousZone)
             {
                 LeavingAetheryteWarning.Show();
@@ -160,12 +176,15 @@ public sealed class Plugin : IDalamudPlugin
             }
 
             var hasUnattunedAetheryte = false;
-            foreach (var aetheryte in aetherytes)
+            if (!enteredHousingTerritory)
             {
-                if (aetheryte.Territory.RowId == currentTerritory && !uiState->IsAetheryteUnlocked(aetheryte.RowId))
+                foreach (var aetheryte in aetherytes)
                 {
-                    hasUnattunedAetheryte = true;
-                    break;
+                    if (aetheryte.Territory.RowId == currentTerritory && !uiState->IsAetheryteUnlocked(aetheryte.RowId))
+                    {
+                        hasUnattunedAetheryte = true;
+                        break;
+                    }
                 }
             }
 
@@ -224,6 +243,14 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         return false;
+    }
+
+    private bool IsWarningExcludedHousingTerritory(uint territoryId)
+    {
+        var territorySheet = DataManager.GetExcelSheet<TerritoryType>();
+        return territorySheet.TryGetRow(territoryId, out var territory) &&
+            territory.PlaceName.IsValid &&
+            WarningExcludedHousingZoneNames.Contains(territory.PlaceName.Value.Name.ToString());
     }
 
     private unsafe bool IsZoneFullyAttuned(uint territoryId, UIState* uiState)

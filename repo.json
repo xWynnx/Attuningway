@@ -3,7 +3,7 @@
     "Author": "Wynn",
     "Name": "Wynn's Guide to the Attuniverse",
     "InternalName": "Attuningway",
-    "AssemblyVersion": "0.0.0.1",
+    "AssemblyVersion": "0.0.0.2",
     "Description": "Warns you if you've forgotten/need to attune to an aetheryte and rewards you when you do.",
     "ApplicableVersion": "any",
     "RepoUrl": "https://github.com/xWynnx/Attuningway",
@@ -20,8 +20,8 @@
     "IconUrl": "https://i.imgur.com/H9tqVU7.png",
     "Punchline": "If the answer to life was simply 42, we'd have attuned to all these damn aetherytes by now!",
     "AcceptsFeedback": true,
-    "DownloadLinkInstall": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.1/Attuningway.zip",
-    "DownloadLinkUpdate": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.1/Attuningway.zip",
-    "DownloadLinkTesting": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.1/Attuningway.zip"
+    "DownloadLinkInstall": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.2/Attuningway.zip",
+    "DownloadLinkUpdate": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.2/Attuningway.zip",
+    "DownloadLinkTesting": "https://github.com/xWynnx/Attuningway/releases/download/v0.0.0.2/Attuningway.zip"
   }
 ]
