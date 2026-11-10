@@ -26,16 +26,21 @@ public sealed class Plugin : IDalamudPlugin
 
     private const string CommandName = "/attunement";
 
-    private static readonly HashSet<string> WarningExcludedHousingZoneNames = new(StringComparer.OrdinalIgnoreCase)
+    // TerritoryType row IDs from the current game data. Include housing districts and
+    // their private chambers, houses, and company workshops so neither arrival nor
+    // leaving warnings can fire while the player is inside housing.
+    private static readonly HashSet<uint> WarningExcludedHousingTerritoryIds = new()
     {
-        "The Mist",
-        "Mist",
-        "The Goblet",
-        "Goblet",
-        "The Lavender Beds",
-        "Lavender Beds",
-        "Shirogane",
-        "Empyreum",
+        // The Mist: district, private rooms/houses, and company workshop.
+        282, 283, 284, 339, 384, 423,
+        // The Lavender Beds.
+        340, 342, 343, 344, 385, 425,
+        // The Goblet.
+        341, 345, 346, 347, 386, 424,
+        // Shirogane.
+        641, 649, 650, 651, 652, 653,
+        // Empyreum.
+        979, 980, 981, 982, 983, 984,
     };
 
     public Configuration Configuration { get; init; }
@@ -247,10 +252,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private bool IsWarningExcludedHousingTerritory(uint territoryId)
     {
-        var territorySheet = DataManager.GetExcelSheet<TerritoryType>();
-        return territorySheet.TryGetRow(territoryId, out var territory) &&
-            territory.PlaceName.IsValid &&
-            WarningExcludedHousingZoneNames.Contains(territory.PlaceName.Value.Name.ToString());
+        return WarningExcludedHousingTerritoryIds.Contains(territoryId);
     }
 
     private unsafe bool IsZoneFullyAttuned(uint territoryId, UIState* uiState)
